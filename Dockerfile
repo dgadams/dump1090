@@ -1,16 +1,20 @@
+# Dockerfile to build dump1090:alpine image
+#
+# D.G. Adams 2024-Sep-13
+
 FROM debian:bookworm-slim  as builder
 
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get -yq install  \
       build-essential \
       debhelper \
       fakeroot \
       git \
       libncurses-dev \
       librtlsdr-dev \
-      pkg-config
+      pkg-config 
 
-RUN git clone https://github.com/flightaware/dump1090.git /dump1090
+Run git clone https://github.com/flightaware/dump1090.git /dump1090
 WORKDIR /dump1090
 RUN dpkg-buildpackage -b --no-sign --build-profiles=custom,rtlsdr 
 #####################################################################
@@ -41,6 +45,7 @@ RUN \
     touch /run/piaware/status.json && \
     chmod 755 /run/piaware/status.json
 
+# only port 8080 is needed if running stand alone
 EXPOSE 8080 30001 30002 30003 30004 30005 30104
 USER dump1090
 CMD ["/dump1090/dump1090.sh"]

@@ -1,5 +1,4 @@
-
-name: piaware
+name: dump1090
 services:
   dump1090:
     container_name: dump1090
@@ -11,8 +10,8 @@ services:
     devices:
       - /dev/bus/usb
     environment:
-      RECEIVER_LON: "-106.51992"
-      RECEIVER_LAT: "35.05850"
+      RECEIVER_LON: "-106.0"
+      RECEIVER_LAT: "35.0"
       RECEIVER: "rtlsdr"
-      RECEIVER_SERIAL: "00000978"
+      RECEIVER_SERIAL: "your device s/n here."
       JSON_LOCATION_ACCURACY: 2
