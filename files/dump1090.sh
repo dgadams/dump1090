@@ -3,7 +3,8 @@ set -e
 
 # default options for dump1090
 # these options are necessary for proper operation of dump1090.
-OPTS=" --device-type rtlsdr"
+OPTS=" --quiet"
+OPTS="$OPTs --device-type rtlsdr"
 OPTS="$OPTS --net-ro-port 30002"
 OPTS="$OPTS --net-sbs-port 30003"
 OPTS="$OPTS --net-bi-port 30004,30104"
@@ -22,8 +23,8 @@ OPTS="$OPTS --write-json /run/dump1090"
 
 # passed in options for dump1090
 if [ -n "$RECEIVER_SERIAL" ]; then OPTS="$OPTS --device-index $RECEIVER_SERIAL"; fi
-if [ -n "$RECEIVER_GAIN" ]; then OPTS="$OPTS --gain $RECEIVER_GAIN"; fi
-if [ -n "$MAX_RANGE" ]; then OPTS="$OPTS --max-range $MAX_RANGE"; fi
+if [ -n "$RECEIVER_GAIN"   ]; then OPTS="$OPTS --gain $RECEIVER_GAIN"; fi
+if [ -n "$MAX_RANGE"       ]; then OPTS="$OPTS --max-range $MAX_RANGE"; fi
 if [ "$ERROR_CORRECTION" = "yes" ]; then OPTS="$OPTS --fix"; fi
 if [ -n "$JSON_LOCATION_ACCURACY" ]; then 
     OPTS="$OPTS --json-location-accuracy $JSON_LOCATION_ACCURACY"
@@ -34,4 +35,4 @@ fi
 
 # start everything up
 nginx -g 'pid /run/dump1090/nginx.pid;' -c '/dump1090/nginx.conf'
-exec /usr/bin/dump1090 --quiet $OPTS
+exec /usr/bin/dump1090 $OPTS
