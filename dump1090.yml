@@ -2,7 +2,7 @@ name: dump1090
 services:
   dump1090:
     container_name: dump1090
-    image: dump1090:alpine
+    image: dgadams/dump1090
     restart: unless-stopped
     init: true
     ports: 

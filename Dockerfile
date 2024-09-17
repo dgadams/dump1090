@@ -1,5 +1,11 @@
 # Dockerfile to build dump1090:alpine image
 #
+# A stand alone dump1090 which reads ADS-B signals from an RTL-D USB stick.
+# nginx provides a web display of planes on a map.
+# This project is set up to work with piaware but there is no advantage
+# in size or performance by running split, so I usually combine
+# everything into one image.
+#
 # D.G. Adams 2024-Sep-13
 
 FROM debian:bookworm-slim  AS builder
@@ -31,8 +37,7 @@ COPY files/* ./
 COPY libs/* /lib/
 
 RUN <<EOF
-    apk add --no-cache nginx rtl-sdr gcompat
-#   apk add --no-cache nginx gcompat
+    apk add --no-cache nginx rtl-sdr gcompat bash
     adduser -D dump1090
     adduser dump1090 dump1090
     mkdir /run/dump1090

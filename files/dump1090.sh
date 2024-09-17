@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # default options for dump1090
 # these options are necessary for proper operation of dump1090.
 OPTS=" --quiet"
-OPTS="$OPTs --device-type rtlsdr"
+OPTS="$OPTS --device-type rtlsdr"
 OPTS="$OPTS --net-ro-port 30002"
 OPTS="$OPTS --net-sbs-port 30003"
 OPTS="$OPTS --net-bi-port 30004,30104"
