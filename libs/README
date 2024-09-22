@@ -1,3 +1,0 @@
-### Had to pull in two libraries from Debian to get things to work.
-- libncurses.so.6.4
-- libtinfo.so.6.4

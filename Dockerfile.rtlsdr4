@@ -8,9 +8,9 @@
 #
 # D.G. Adams 2024-Sep-13
 
-FROM debian:bookworm-slim  AS builder
+FROM debian:bookworm-slim  AS build
 
-RUN <<EOF
+RUN <<EOR
     apt-get -yq update
     apt-get -yq install \
         build-essential \
@@ -19,26 +19,39 @@ RUN <<EOF
         git \
         libncurses-dev \
         librtlsdr-dev \
-        pkg-config 
+        pkg-config \
+        libncurses6 \
+        libtinfo5
     git clone https://github.com/flightaware/dump1090.git /dump1090
     cd /dump1090
     dpkg-buildpackage -b --no-sign --build-profiles=custom,rtlsdr 
-EOF
+EOR
+
+WORKDIR /libs
+RUN <<EOR
+    mv /lib/x86_64-linux-gnu/libncurses.so.6.4 .
+    mv /lib/x86_64-linux-gnu/libtinfo.so.5.9 .
+EOR
 #####################################################################
 
 #FROM alpine AS install
 FROM dgadams/rtlsdr4 AS install 
 
 WORKDIR /dump1090
-
-COPY --from=builder /dump1090/dump1090 /usr/bin/dump1090
-COPY --from=builder /dump1090/public_html/ /dump1090/public_html/
-COPY files/* ./
-COPY libs/* /lib/
+COPY --from=build /dump1090/public_html/ ./public_html
+COPY --from=build /dump1090/dump1090 /usr/bin
+COPY --from=build /libs/* /lib
+COPY files/* .
 
 RUN <<EOF
-    apk add --no-cache nginx
-    rm /usr/local/bin/*
+    cd /lib
+        ln -s libtinfo.so.5.9 libtinfo.so.5
+        ln -s libtinfo.so.5 libtinfo.so
+        ln -s libncurses.so.6.4 libncurses.so.6
+        ln -s libncurses.so.6 libncurses.so
+    cd /dump1090
+
+    apk add --no-cache nginx gcompat bash
     adduser -D dump1090
     adduser dump1090 dump1090
     mkdir /run/dump1090
@@ -47,8 +60,6 @@ RUN <<EOF
     chown -R dump1090 /var/log/nginx
     chown -R dump1090 /var/lib/nginx
     rm -rf /etc/nginx
-    ln -s /lib/libncurses.so.6.4 /lib/libncurses.so.6
-    ln -s /lib/libtinfo.so.6.4 /lib/libtinfo.so.6
     mkdir /run/piaware
     touch /run/piaware/status.json
     chmod 755 /run/piaware/status.json
